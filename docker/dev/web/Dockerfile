@@ -57,6 +57,15 @@ RUN apt-get -y update \
         php \
         php-fpm \
         python3-matplotlib \
+        # boca-auth
+        curl \
+        php-curl \
+        php-ldap \
+        unzip \
+    && curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && composer self-update \
+    && composer require google/apiclient \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p $APACHE_LOCK_DIR \
