@@ -66,14 +66,6 @@ on:
         type: number
 
 env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY_HOST: ghcr.io
-  # Use github.repository_owner (<account>)
-  REPOSITORY_OWNER: ${{ github.repository_owner }}
-  # Use github.event.repository.name
-  REPOSITORY_NAME: ${{ github.event.repository.name }}
-  # Use github.repository (<account>/<repo>)
-  REPOSITORY: ${{ github.repository }}
   # Number of retries if workflow fails (default is 3)
   RETRY_LIMIT: 3
   # Delay between retries in seconds (default is 60)
@@ -229,7 +221,7 @@ jobs:
   build-base:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       dockerfile: docker/dev/base/Dockerfile
       parents: ${{ needs.setup-matrix.outputs.parent }}
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
@@ -246,10 +238,10 @@ jobs:
   build-web:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       dockerfile: docker/dev/web/Dockerfile
       parents: >
-        ["${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY }}/boca-base:${{ github.ref_name }}"]
+        ["ghcr.io/${{ github.repository }}/boca-base:${{ github.ref_name }}"]
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
@@ -263,10 +255,10 @@ jobs:
   build-jail:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-jail" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       dockerfile: docker/dev/jail/Dockerfile
       parents: >
-        ["${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY }}/boca-base:${{ github.ref_name }}"]
+        ["ghcr.io/${{ github.repository }}/boca-base:${{ github.ref_name }}"]
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
@@ -280,7 +272,7 @@ jobs:
   lint-base:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -292,7 +284,7 @@ jobs:
   scan-base:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -304,7 +296,7 @@ jobs:
   lint-web:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -316,7 +308,7 @@ jobs:
   scan-web:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -328,7 +320,7 @@ jobs:
   lint-jail:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-jail" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -340,7 +332,7 @@ jobs:
   scan-jail:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "${{ env.REPOSITORY_NAME }}/boca-jail" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -391,7 +383,7 @@ jobs:
           echo $DELAY
           sleep $DELAY
 
-          WORKFLOWS_URL="/repos/${{ env.REPOSITORY }}/"
+          WORKFLOWS_URL="/repos/${{ github.repository }}/"
           WORKFLOWS_URL+="actions/workflows"
           echo "$WORKFLOWS_URL"
 
@@ -415,7 +407,7 @@ jobs:
           echo $WORKFLOW_ID
 
           # Prepare api endpoint
-          URL="https://api.github.com/repos/${{ env.REPOSITORY }}/\
+          URL="https://api.github.com/repos/${{ github.repository }}/\
           actions/workflows/$WORKFLOW_ID/dispatches"
           echo $URL
 
