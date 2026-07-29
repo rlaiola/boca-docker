@@ -224,7 +224,7 @@ jobs:
   build-base:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       dockerfile: docker/dev/base/Dockerfile
       parents: ${{ needs.setup-matrix.outputs.parent }}
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
@@ -241,7 +241,7 @@ jobs:
   build-web:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       dockerfile: docker/dev/web/Dockerfile
       parents: '["ghcr.io/${{ github.repository_owner }}/boca-base:${{ github.ref_name }}"]'
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
@@ -257,7 +257,7 @@ jobs:
   build-jail:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "boca-jail" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       dockerfile: docker/dev/jail/Dockerfile
       parents: '["ghcr.io/${{ github.repository_owner }}/boca-base:${{ github.ref_name }}"]'
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
@@ -273,7 +273,7 @@ jobs:
   lint-base:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -285,7 +285,7 @@ jobs:
   scan-base:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -297,7 +297,7 @@ jobs:
   lint-web:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -309,7 +309,7 @@ jobs:
   scan-web:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -321,7 +321,7 @@ jobs:
   lint-jail:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "boca-jail" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -333,7 +333,7 @@ jobs:
   scan-jail:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "boca-jail" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
