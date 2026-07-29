@@ -225,6 +225,7 @@ jobs:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
       images: '[ "boca-base" ]'
+      dockerfile: docker/dev/base/Dockerfile
       parents: ${{ needs.setup-matrix.outputs.parent }}
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
@@ -241,6 +242,7 @@ jobs:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
       images: '[ "boca-web" ]'
+      dockerfile: docker/dev/web/Dockerfile
       parents: '["ghcr.io/${{ github.repository_owner }}/boca-base:${{ github.ref_name }}"]'
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
@@ -256,6 +258,7 @@ jobs:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
       images: '[ "boca-jail" ]'
+      dockerfile: docker/dev/jail/Dockerfile
       parents: '["ghcr.io/${{ github.repository_owner }}/boca-base:${{ github.ref_name }}"]'
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
