@@ -49,8 +49,7 @@ jobs:
         platform: ${{ fromJSON(inputs.platforms) }}
 
     steps:
-      - 
-        name: Write variables to GITHUB_OUTPUT
+      - name: Write variables to GITHUB_OUTPUT
         id: setup
         run: |
 
@@ -88,11 +87,9 @@ jobs:
 
       # Checkout a repository, so the workflow can access it
       # https://github.com/actions/checkout
-      - 
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - 
-        name: Launch the application
+      - name: Launch the application
         run: |
 
           # Create .env file with environment variables
@@ -128,26 +125,22 @@ jobs:
 
       # Set up GitHub Actions workflow with a specific version of node.js
       # https://github.com/actions/setup-node
-      - 
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 18
 
       # Performs a clean installation of all dependencies in the
       # `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
-      - 
-        name: Install dependencies
+      - name: Install dependencies
         run: npm ci
         working-directory: ./tests/e2e
 
-      - 
-        name: Install Playwright Browsers
+      - name: Install Playwright Browsers
         run: npx playwright install --with-deps
         working-directory: ./tests/e2e
 
-      - 
-        name: Prepare for running tests
+      - name: Prepare for running tests
         run: |
 
           mkdir -p ./playwright/.auth
@@ -155,21 +148,18 @@ jobs:
           echo "{}" > ./playwright/.auth/system.json
         working-directory: ./tests/e2e
 
-      - 
-        name: Run Playwright tests
+      - name: Run Playwright tests
         run: npx playwright test
         working-directory: ./tests/e2e
 
-      - 
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ${{ steps.setup.outputs.report_name }}
           path: ./tests/e2e/playwright-report/
           retention-days: 30
 
-      - 
-        name: Bring the application down
+      - name: Bring the application down
         run: |
 
           # Stop containers
