@@ -34,11 +34,11 @@ jobs:
     uses: rlaiola/ci-templates/.github/workflows/clean-packages.yml@main
     with:
       images: >-
-      [
-        "${{ github.event.repository.name }}/boca-base",
-        "${{ github.event.repository.name }}/boca-web",
-        "${{ github.event.repository.name }}/boca-jail"
-      ]
+        [
+          "${{ github.event.repository.name }}/boca-base",
+          "${{ github.event.repository.name }}/boca-web",
+          "${{ github.event.repository.name }}/boca-jail"
+        ]
       releases: ${{ needs.setup-matrix.outputs.release }}
       tags: ${{ github.event.inputs.tags }}
     secrets:
