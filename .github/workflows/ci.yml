@@ -243,7 +243,8 @@ jobs:
     with:
       images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       dockerfile: docker/dev/web/Dockerfile
-      parents: '["ghcr.io/${{ github.repository_owner }}/boca-base:${{ github.ref_name }}"]'
+      parents: >
+        ["ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}/boca-base:${{ github.ref_name }}"]
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
@@ -259,7 +260,8 @@ jobs:
     with:
       images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       dockerfile: docker/dev/jail/Dockerfile
-      parents: '["ghcr.io/${{ github.repository_owner }}/boca-base:${{ github.ref_name }}"]'
+      parents: >
+        ["ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}/boca-base:${{ github.ref_name }}"]
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
