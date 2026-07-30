@@ -92,6 +92,7 @@ jobs:
       tags: ${{ steps.set-inputs.outputs.tags }}
       latest: ${{ steps.set-inputs.outputs.latest }}
       ref: ${{ steps.set-inputs.outputs.ref }}
+      image_tag: ${{ steps.set-inputs.outputs.image_tag }}
       boca_repository: ${{ steps.set-inputs.outputs.boca_repository }}
       boca_ref: ${{ steps.set-inputs.outputs.boca_ref }}
       retry_countdown: ${{ steps.set-inputs.outputs.retry_countdown }}
@@ -177,6 +178,13 @@ jobs:
             echo "ref=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
           fi
 
+          # 
+          IMAGE_TAG="${TAGS%% *}"
+          if [[ "${IMAGE_TAG}" == "latest" && "${TAGS}" == *" "* ]]; then
+            IMAGE_TAG="${TAGS#* }"
+          fi
+          echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+
           # Prepare the Git URL of the BOCA repository to clone from and
           # the branch, tag or SHA to point to in the cloned BOCA repository
           BOCA_REPOSITORY="${{ inputs.boca_repository }}"
@@ -229,19 +237,18 @@ jobs:
         run: |
 
           BASE_PARENT='${{ needs.setup-matrix.outputs.parent }}'
-
           echo "$BASE_PARENT"
           echo "base_parent=$BASE_PARENT" >> "$GITHUB_OUTPUT"
 
           DERIVED_PARENT=$(
             jq -c \
               --arg repo "ghcr.io/${GITHUB_REPOSITORY}/boca-base" \
-              --arg ref "${{ needs.setup-inputs.outputs.ref }}" \
+              --arg tag "${{ needs.setup-inputs.outputs.image_tag }}" \
               '
                 map(
                   $repo
                   + ":"
-                  + $ref
+                  + $tag
                   + "-"
                   + (split(":") | last)
                 )
@@ -260,7 +267,7 @@ jobs:
       images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       dockerfile: docker/dev/base/Dockerfile
       parents: ${{ needs.setup-matrix.outputs.parent }}
-      default_parent: ${{ needs.setup-parents.outputs.base_parent }}
+      default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
       latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
@@ -278,7 +285,7 @@ jobs:
       images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       dockerfile: docker/dev/web/Dockerfile
       parents: ${{ needs.setup-parents.outputs.derived_parent }}
-      default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
+      default_parent: ${{ needs.setup-parents.outputs.base_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
       latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
@@ -295,7 +302,7 @@ jobs:
       images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       dockerfile: docker/dev/jail/Dockerfile
       parents: ${{ needs.setup-parents.outputs.derived_parent }}
-      default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
+      default_parent: ${{ needs.setup-parents.outputs.base_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
       latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
