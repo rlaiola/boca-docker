@@ -218,13 +218,49 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  setup-parents:
+    runs-on: ubuntu-latest
+    outputs:
+      base_parent: ${{ steps.parents.outputs.base_parent }}
+      derived_parent: ${{ steps.parents.outputs.derived_parent }}
+    steps:
+      - id: parents
+        shell: bash
+        run: |
+
+          BASE_PARENT='${{ needs.setup-matrix.outputs.parent }}'
+
+          echo "$BASE_PARENT"
+          echo "base_parent=$BASE_PARENT" >> "$GITHUB_OUTPUT"
+
+          DERIVED_PARENT=$(
+            jq -c \
+              --arg repo "ghcr.io/${GITHUB_REPOSITORY}/boca-base" \
+              --arg ref "${{ needs.setup-inputs.outputs.ref }}" \
+              '
+                map(
+                  $repo
+                  + ":"
+                  + $ref
+                  + "-"
+                  + (split(":") | last)
+                )
+              ' <<< "$BASE_PARENT"
+          )
+
+          echo "$DERIVED_PARENT"
+          echo "derived_parent=$DERIVED_PARENT" >> "$GITHUB_OUTPUT"
+    needs:
+      - setup-matrix
+      - setup-inputs
+
   build-base:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
       images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       dockerfile: docker/dev/base/Dockerfile
       parents: ${{ needs.setup-matrix.outputs.parent }}
-      default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
+      default_parent: ${{ needs.setup-parents.outputs.base_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
       latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
@@ -234,14 +270,14 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
 
   build-web:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
       images: '[ "${{ github.event.repository.name }}/boca-web" ]'
       dockerfile: docker/dev/web/Dockerfile
-      parents: >
-        ["ghcr.io/${{ github.repository }}/boca-base:${{ github.ref_name }}"]
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
@@ -250,6 +286,7 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-base
 
   build-jail:
@@ -257,8 +294,7 @@ jobs:
     with:
       images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
       dockerfile: docker/dev/jail/Dockerfile
-      parents: >
-        ["ghcr.io/${{ github.repository }}/boca-base:${{ github.ref_name }}"]
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
@@ -267,6 +303,7 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-base
 
   lint-base:
