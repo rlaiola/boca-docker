@@ -11,14 +11,14 @@
 
 [![Google_Groups][groups_badge]][groups_link]
 
-[build_publish_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/ci.yml?label=build%20images&logo=github
-[build_publish_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=CI "build and publish multi-platform images"
-[cache_cleanup_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/clean-cache.yml?label=clean%20cache&logo=github
-[cache_cleanup_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=delete%20GitHub "delete github actions cache"
-[packages_cleanup_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/clean-packages.yml?label=clean%20packages&logo=github
-[packages_cleanup_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=delete%20untagged "delete untagged/unsupported images"
-[close_stale_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/close-stale.yml?label=close%20stale&logo=github
-[close_stale_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=close%20stale "close stale issues and prs"
+[build_publish_workflow_badge]: https://img.shields.io/github/actions/workflow/status/rlaiola/boca-docker/ci.yml?label=build%20images&logo=github
+[build_publish_workflow_link]: https://github.com/rlaiola/boca-docker/actions?workflow=CI "build and publish multi-platform images"
+[cache_cleanup_workflow_badge]: https://img.shields.io/github/actions/workflow/status/rlaiola/boca-docker/clean-cache.yml?label=clean%20cache&logo=github
+[cache_cleanup_workflow_link]: https://github.com/rlaiola/boca-docker/actions?workflow=delete%20GitHub "delete github actions cache"
+[packages_cleanup_workflow_badge]: https://img.shields.io/github/actions/workflow/status/rlaiola/boca-docker/clean-packages.yml?label=clean%20packages&logo=github
+[packages_cleanup_workflow_link]: https://github.com/rlaiola/boca-docker/actions?workflow=delete%20untagged "delete untagged/unsupported images"
+[close_stale_workflow_badge]: https://img.shields.io/github/actions/workflow/status/rlaiola/boca-docker/close-stale.yml?label=close%20stale&logo=github
+[close_stale_workflow_link]: https://github.com/rlaiola/boca-docker/actions?workflow=close%20stale "close stale issues and prs"
 [ubuntu_jammy_badge]: https://img.shields.io/badge/ubuntu-jammy-E95420.svg?logo=Ubuntu
 [ubuntu_focal_badge]: https://img.shields.io/badge/ubuntu-focal-E95420.svg?logo=Ubuntu
 [ubuntu_jammy_link]: https://hub.docker.com/_/ubuntu/tags?page=1&name=jammy "ubuntu:jammy image"
@@ -156,13 +156,13 @@ For example, to use BOCA version 1.5 running on Ubuntu 20.04 LTS (Focal Fossa) o
 
     # web app
     boca-web:
-        image: ghcr.io/joaofazolo/boca-docker/boca-web:1.2-focal
+        image: ghcr.io/rlaiola/boca-docker/boca-web:1.2-focal
     ...
 
     ...
     # online judge
     boca-jail:
-        image: ghcr.io/joaofazolo/boca-docker/boca-jail:1.2-focal
+        image: ghcr.io/rlaiola/boca-docker/boca-jail:1.2-focal
     ...
   ```
 
@@ -180,7 +180,7 @@ The following image tags have been deprecated and are no longer receiving update
 - Clone this repository and set it as your working directory:
 
   ```sh
-  git clone https://github.com/joaofazolo/boca-docker.git
+  git clone https://github.com/rlaiola/boca-docker.git
   cd boca-docker
   ```
 
@@ -217,9 +217,9 @@ The following image tags have been deprecated and are no longer receiving update
   ```sh
   docker image ls
   # boca-base only necessary for development
-  # docker tag IMAGE_ID_BOCA_BASE ghcr.io/joaofazolo/boca-docker/boca-base:1.2.2
-  docker tag IMAGE_ID_BOCA_WEB ghcr.io/joaofazolo/boca-docker/boca-web:1.2.2
-  docker tag IMAGE_ID_BOCA_JAIL ghcr.io/joaofazolo/boca-docker/boca-jail:1.2.2
+  # docker tag IMAGE_ID_BOCA_BASE ghcr.io/rlaiola/boca-docker/boca-base:1.2.2
+  docker tag IMAGE_ID_BOCA_WEB ghcr.io/rlaiola/boca-docker/boca-web:1.2.2
+  docker tag IMAGE_ID_BOCA_JAIL ghcr.io/rlaiola/boca-docker/boca-jail:1.2.2
   ```
 
 - Log in into GitHub's Container Registry using your username and personal access token (see [documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry));
@@ -232,14 +232,14 @@ The following image tags have been deprecated and are no longer receiving update
 
   ```sh
   # boca-base only necessary for development
-  # docker push ghcr.io/joaofazolo/boca-docker/boca-base:1.2.2
-  docker push ghcr.io/joaofazolo/boca-docker/boca-web:1.2.2
-  docker push ghcr.io/joaofazolo/boca-docker/boca-jail:1.2.2
+  # docker push ghcr.io/rlaiola/boca-docker/boca-base:1.2.2
+  docker push ghcr.io/rlaiola/boca-docker/boca-web:1.2.2
+  docker push ghcr.io/rlaiola/boca-docker/boca-jail:1.2.2
   ```
 
 ## How To Contribute
 
-If you would like to help contribute to this project, please see [CONTRIBUTING](https://github.com/joaofazolo/boca-docker/blob/master/CONTRIBUTING.md).
+If you would like to help contribute to this project, please see [CONTRIBUTING](https://github.com/rlaiola/boca-docker/blob/master/CONTRIBUTING.md).
 
 Before submitting a PR consider building and testing a Docker image locally and checking your code with Super-Linter:
 
@@ -291,4 +291,4 @@ This program is released under license GNU GPL v3+ license.
 
 ## Support
 
-Please report any issues with _boca-docker_ at [https://github.com/joaofazolo/boca-docker/issues](https://github.com/joaofazolo/boca-docker/issues)
+Please report any issues with _boca-docker_ at [https://github.com/rlaiola/boca-docker/issues](https://github.com/rlaiola/boca-docker/issues)
