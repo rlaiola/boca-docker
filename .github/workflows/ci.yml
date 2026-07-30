@@ -231,6 +231,10 @@ jobs:
     outputs:
       base_parent: ${{ steps.parents.outputs.base_parent }}
       derived_parent: ${{ steps.parents.outputs.derived_parent }}
+    needs:
+      - setup-matrix
+      - setup-inputs
+
     steps:
       - id: parents
         shell: bash
@@ -262,9 +266,6 @@ jobs:
 
           echo "$DERIVED_PARENT"
           echo "derived_parent=$DERIVED_PARENT" >> "$GITHUB_OUTPUT"
-    needs:
-      - setup-matrix
-      - setup-inputs
 
   build-base:
     uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
@@ -346,48 +347,54 @@ jobs:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
       images: '[ "${{ github.event.repository.name }}/boca-web" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parent
       - build-web
 
   scan-web:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
       images: '[ "${{ github.event.repository.name }}/boca-web" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parent
       - build-web
 
   lint-jail:
     uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
       images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
+      accept-filenames: |
+        settings.py
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-jail
 
   scan-jail:
     uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
       images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parent
       - build-jail
 
   e2e-test:
