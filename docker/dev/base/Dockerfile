@@ -48,7 +48,7 @@ RUN git checkout "${ENV_REF}"
 # The efficient way to publish multi-arch containers from GitHub Actions
 # https://actuated.dev/blog/multi-arch-docker-github-actions
 # hadolint ignore=DL3006
-FROM --platform=${BUILDPLATFORM:-linux/amd64} ${BASE_IMAGE}
+FROM --platform=${TARGETPLATFORM:-linux/amd64} ${BASE_IMAGE}
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM

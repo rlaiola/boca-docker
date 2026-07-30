@@ -21,7 +21,7 @@
 # Build on base image
 ARG BASE_IMAGE=boca-base
 # hadolint ignore=DL3006
-FROM --platform=${BUILDPLATFORM:-linux/amd64} ${BASE_IMAGE}
+FROM --platform=${TARGETPLATFORM:-linux/amd64} ${BASE_IMAGE}
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
