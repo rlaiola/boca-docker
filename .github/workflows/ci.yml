@@ -237,8 +237,6 @@ jobs:
         run: |
 
           BASE_PARENT='${{ needs.setup-matrix.outputs.parent }}'
-          echo "$BASE_PARENT"
-          echo "base_parent=$BASE_PARENT" >> "$GITHUB_OUTPUT"
 
           DERIVED_PARENT=$(
             jq -c \
@@ -254,6 +252,13 @@ jobs:
                 )
               ' <<< "$BASE_PARENT"
           )
+
+          DEFAULT_PARENT=$(
+            jq -r '.[0]' <<< "$DERIVED_PARENT"
+          )
+
+          echo "$DEFAULT_PARENT"
+          echo "base_parent=$DEFAULT_PARENT" >> "$GITHUB_OUTPUT"
 
           echo "$DERIVED_PARENT"
           echo "derived_parent=$DERIVED_PARENT" >> "$GITHUB_OUTPUT"
