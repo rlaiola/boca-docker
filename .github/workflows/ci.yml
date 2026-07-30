@@ -353,7 +353,7 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
-      - setup-parent
+      - setup-parents
       - build-web
 
   scan-web:
@@ -366,7 +366,7 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
-      - setup-parent
+      - setup-parents
       - build-web
 
   lint-jail:
@@ -394,7 +394,7 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
-      - setup-parent
+      - setup-parents
       - build-jail
 
   e2e-test:
