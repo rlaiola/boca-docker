@@ -89,6 +89,14 @@ jobs:
       # https://github.com/actions/checkout
       - uses: actions/checkout@v7
 
+      - name: Test shell
+        run: |
+          docker run --rm \
+            --platform ${{ matrix.platform }} \
+            --entrypoint /bin/bash \
+            ghcr.io/rlaiola/boca-docker/boca-web:${{ env.TAG }} \
+            -c 'echo OK'
+
       - name: Launch the application
         run: |
 
