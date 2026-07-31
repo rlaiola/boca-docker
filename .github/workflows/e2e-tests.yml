@@ -102,6 +102,7 @@ jobs:
 
           cat .env
 
+          docker syste,prune -af --volumes
           docker compose config
 
           IMG_WEB="${{ steps.setup.outputs.image_package }}/"
@@ -113,10 +114,13 @@ jobs:
           docker pull --platform ${{ matrix.platform }} ${IMG_JAIL}
 
           # List available images
-          docker images
+          docker image ls
 
           # Launch application
-          docker compose up -d
+          docker compose up -d --wait
+
+          #  Check for services that terminated unexpectedly during startup
+          docker compose ps --status exited
 
           # List running containers
           docker container ls -a
