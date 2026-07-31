@@ -68,7 +68,7 @@ printf "#!/bin/sh\n\
 BOCAIP=%s" "$BOCA_WEB_HOST" > /etc/bocaip
 
 until PGPASSWORD=$BOCA_DB_PASSWORD \
-  psql
+  psql \
     -h "$BOCA_DB_HOST" \
     -U "$BOCA_DB_USER" \
     -d "$BOCA_DB_NAME" \
