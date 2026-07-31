@@ -102,7 +102,7 @@ jobs:
 
           cat .env
 
-          docker syste,prune -af --volumes
+          docker system prune -af --volumes
           docker compose config
 
           IMG_WEB="${{ steps.setup.outputs.image_package }}/"
