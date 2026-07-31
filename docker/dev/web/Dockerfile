@@ -30,7 +30,7 @@ ARG TARGETARCH
 
 LABEL authors="Joao Vitor Alves Fazolo, Rodrigo Laiola Guimaraes"
 ENV CREATED_AT 2020-06-26
-ENV UPDATED_AT 2023-06-01
+ENV UPDATED_AT 2026-07-31
 
 # Apache settings
 ENV APACHE_RUN_USER  www-data
@@ -107,4 +107,4 @@ EXPOSE 80
 
 # Use exec format to run program directly as pid 1
 # https://www.padok.fr/en/blog/docker-processes-container
-ENTRYPOINT ["/bin/bash", "/init.sh"]
+ENTRYPOINT ["/init.sh"]
