@@ -117,7 +117,13 @@ jobs:
           docker image ls
 
           # Launch application
-          docker compose up -d --wait
+          docker compose up -d --wait || {
+            docker compose ps
+            docker compose logs boca-jail
+            docker compose logs boca-web
+            docker compose logs boca-db
+            exit 1
+          }
 
           #  Check for services that terminated unexpectedly during startup
           docker compose ps --status exited
