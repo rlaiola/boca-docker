@@ -33,12 +33,6 @@ services:
             - BOCA_DB_SUPER_PASSWORD=superpass
         ports:
             - 8000:80
-        healthcheck:
-            test: ["CMD-SHELL", "curl -fsS http://localhost:8000/boca >/dev/null || exit 1"]
-            interval: 10s
-            timeout: 5s
-            retries: 20
-            start_period: 30s
 
     # online judge
     boca-jail:
