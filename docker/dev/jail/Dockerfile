@@ -99,4 +99,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
 
 # Use exec format to run program directly as pid 1
 # https://www.padok.fr/en/blog/docker-processes-container
-ENTRYPOINT ["/init.sh"]
+ENTRYPOINT ["/bin/bash", "/init.sh"]
