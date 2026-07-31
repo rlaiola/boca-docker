@@ -14,31 +14,40 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
+#
 # This program is released under license GNU GPL v3+ license.
 #
 #========================================================================
 
-version: '3.8'
-
 services:
-
     # web app
     boca-web:
-        image: "${PACKAGE}/boca-web:${TAG}"
+        image: '${PACKAGE}/boca-web:${TAG}'
         platform: ${PLATFORM}
+        depends_on:
+            boca-db:
+                condition: service_healthy
         environment:
             # database configuration
             # privileged user password
             - BOCA_DB_SUPER_PASSWORD=superpass
-        ports: 
+        ports:
             - 8000:80
+        healthcheck:
+            test: ["CMD-SHELL", "curl -fsS http://localhost:8000/boca >/dev/null || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 20
+            start_period: 30s
 
     # online judge
     boca-jail:
-        image: "${PACKAGE}/boca-jail:${TAG}"
+        image: '${PACKAGE}/boca-jail:${TAG}'
         platform: ${PLATFORM}
         privileged: true
+        depends_on:
+            boca-db:
+                condition: service_healthy
 
     # database
     boca-db:
@@ -47,3 +56,10 @@ services:
             # database configuration
             # privileged user password
             - POSTGRES_PASSWORD=superpass
+        healthcheck:
+            # determine whether or not it is healthy
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+            interval: 10s       # interval between health checks
+            timeout: 5s         # timeout for each health checking
+            retries: 20         # how many times retries
+            start_period: 10s   # estimated time to boot
