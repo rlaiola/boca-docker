@@ -125,7 +125,7 @@ jobs:
 
           cat .env
 
-          docker system prune -af --volumes
+          # docker system prune -af --volumes
           docker compose config
 
           IMG_WEB="${{ steps.setup.outputs.image_package }}/"
@@ -179,6 +179,21 @@ jobs:
           mkdir -p ./playwright/.auth
           echo "{}" > ./playwright/.auth/anonymous.json
           echo "{}" > ./playwright/.auth/system.json
+        working-directory: ./tests/e2e
+
+      - name: Test HTTP connectivity
+        run: |
+          echo "=== CURL ==="
+          curl -v http://localhost:8000/boca || true
+
+          echo
+          echo "=== WGET ==="
+          wget -S -O - http://localhost:8000/boca || true
+
+          echo
+          echo "=== Docker exec ==="
+          docker compose exec boca-web \
+            wget -S -O - http://localhost/boca || true
         working-directory: ./tests/e2e
 
       - name: Run Playwright tests
