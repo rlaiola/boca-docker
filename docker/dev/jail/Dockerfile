@@ -81,7 +81,7 @@ RUN boca-createjail || true
 # OpenJDK 17 installation with chroot
 # The package is installed on the host system, but the executables
 # must be exposed inside the BOCA jail.
-# hadolint ignore=DL3003
+# hadolint ignore=DL3008,DL3015,DL4006
 RUN apt-get -y update \
     && apt-get -y install \
         openjdk-17-jdk-headless \
