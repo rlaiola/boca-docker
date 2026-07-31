@@ -71,7 +71,7 @@ until PGPASSWORD=$BOCA_DB_PASSWORD \
   psql
     -h "$BOCA_DB_HOST" \
     -U "$BOCA_DB_USER" \
-    -d "$BOCA_DB_NAME" 
+    -d "$BOCA_DB_NAME" \
     -tAc "select count(*) from contesttable";
 do
   >&2 echo "PostgreSQL server is unavailable - sleeping"
