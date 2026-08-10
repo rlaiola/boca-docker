@@ -21,7 +21,7 @@
 # Build on base image
 ARG BASE_IMAGE=boca-base
 # hadolint ignore=DL3006
-FROM --platform=${TARGETPLATFORM:-linux/amd64} ${BASE_IMAGE}
+FROM ${BASE_IMAGE}
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -29,8 +29,8 @@ ARG TARGETOS
 ARG TARGETARCH
 
 LABEL authors="Joao Vitor Alves Fazolo, Rodrigo Laiola Guimaraes"
-ENV CREATED_AT 2020-06-26
-ENV UPDATED_AT 2026-07-31
+ENV CREATED_AT=2020-06-26
+ENV UPDATED_AT=2026-07-31
 
 # Redundant but to ensure we are not going to break anything
 # https://github.com/cassiopc/boca/tree/master/tools
