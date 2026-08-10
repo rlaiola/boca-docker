@@ -142,8 +142,8 @@ To run the _boca-docker_ application built on top of different versions of Ubunt
 
 | Tag name                                             | BOCA version | Ubuntu version | Code name       | Architecture                                      |
 | ---------------------------------------------------- | ------------ | -------------- | --------------- | ------------------------------------------------- |
-| `latest`, `1.2`, `1.2-jammy`, `1.2.2`, `1.2.2-jammy` | 1.5          | 22.04 LTS      | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
-| `1.2-focal`, `1.2.2-focal`                           | 1.5          | 20.04 LTS      | Focal Fossa     | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
+| `latest`, `1.2`, `1.2-jammy`, `1.2.3`, `1.2.3-jammy` | 1.5          | 22.04 LTS      | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
+| `1.2-focal`, `1.2.3-focal`                           | 1.5          | 20.04 LTS      | Focal Fossa     | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
 | `nightly`, `nightly-jammy`                           | 1.5          | 22.04 LTS      | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
 | `nightly-focal`                                      | 1.5          | 20.04 LTS      | Focal Fossa     | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
 
@@ -217,9 +217,9 @@ The following image tags have been deprecated and are no longer receiving update
   ```sh
   docker image ls
   # boca-base only necessary for development
-  # docker tag IMAGE_ID_BOCA_BASE ghcr.io/joaofazolo/boca-docker/boca-base:1.2.2
-  docker tag IMAGE_ID_BOCA_WEB ghcr.io/joaofazolo/boca-docker/boca-web:1.2.2
-  docker tag IMAGE_ID_BOCA_JAIL ghcr.io/joaofazolo/boca-docker/boca-jail:1.2.2
+  # docker tag IMAGE_ID_BOCA_BASE ghcr.io/joaofazolo/boca-docker/boca-base:1.2.3
+  docker tag IMAGE_ID_BOCA_WEB ghcr.io/joaofazolo/boca-docker/boca-web:1.2.3
+  docker tag IMAGE_ID_BOCA_JAIL ghcr.io/joaofazolo/boca-docker/boca-jail:1.2.3
   ```
 
 - Log in into GitHub's Container Registry using your username and personal access token (see [documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry));
@@ -232,9 +232,9 @@ The following image tags have been deprecated and are no longer receiving update
 
   ```sh
   # boca-base only necessary for development
-  # docker push ghcr.io/joaofazolo/boca-docker/boca-base:1.2.2
-  docker push ghcr.io/joaofazolo/boca-docker/boca-web:1.2.2
-  docker push ghcr.io/joaofazolo/boca-docker/boca-jail:1.2.2
+  # docker push ghcr.io/joaofazolo/boca-docker/boca-base:1.2.3
+  docker push ghcr.io/joaofazolo/boca-docker/boca-web:1.2.3
+  docker push ghcr.io/joaofazolo/boca-docker/boca-jail:1.2.3
   ```
 
 ## How To Contribute
