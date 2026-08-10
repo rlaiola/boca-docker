@@ -21,7 +21,7 @@
 # Build on base image
 ARG BASE_IMAGE=boca-base
 # hadolint ignore=DL3006
-FROM --platform=${BUILDPLATFORM:-linux/amd64} ${BASE_IMAGE}
+FROM ${BASE_IMAGE}
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -29,8 +29,8 @@ ARG TARGETOS
 ARG TARGETARCH
 
 LABEL authors="Joao Vitor Alves Fazolo, Rodrigo Laiola Guimaraes"
-ENV CREATED_AT 2020-06-26
-ENV UPDATED_AT 2023-06-01
+ENV CREATED_AT=2020-06-26
+ENV UPDATED_AT=2026-07-31
 
 # Redundant but to ensure we are not going to break anything
 # https://github.com/cassiopc/boca/tree/master/tools
@@ -78,18 +78,18 @@ RUN \
 
 RUN boca-createjail || true
 
-# OpenJDK 17 installation with chroot does not work as expected
-# Workaround: Install OpenJDK 17 manually
-# https://www.linuxcapable.com/how-to-install-openjdk-17-on-ubuntu-linux/
-# hadolint ignore=DL3003
-RUN wget --progress=dot:giga https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz \
-    && tar -xvf openjdk-17* \
-    && cd jdk-17* \
-    && cp -rf bin/* /home/bocajail/usr/bin/ \
-    && cp -rf lib/* /home/bocajail/usr/lib/ \
-    && cd .. \
-    && rm -rf jdk-17* \
-    && rm openjdk-17*
+# OpenJDK 17 installation with chroot
+# The package is installed on the host system, but the executables
+# must be exposed inside the BOCA jail.
+# hadolint ignore=DL3008,DL3015,DL4006
+RUN apt-get -y update \
+    && apt-get -y install \
+        openjdk-17-jdk-headless \
+    && JDK_DIR=$(find /usr/lib/jvm -maxdepth 1 -type d -name 'java-17-openjdk-*' | head -n1) \
+    && ln -sf "$JDK_DIR/bin/java"  /home/bocajail/usr/bin/java \
+    && ln -sf "$JDK_DIR/bin/javac" /home/bocajail/usr/bin/javac \
+    && ln -sf "$JDK_DIR/bin/jar"   /home/bocajail/usr/bin/jar \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --chmod=755 docker/dev/jail/init.sh /
 
@@ -99,4 +99,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
 
 # Use exec format to run program directly as pid 1
 # https://www.padok.fr/en/blog/docker-processes-container
-ENTRYPOINT ["/init.sh"]
+ENTRYPOINT ["/bin/bash", "/init.sh"]
