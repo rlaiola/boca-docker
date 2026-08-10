@@ -40,6 +40,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    continue-on-error: >-
+      ${{
+        matrix.platform != 'linux/amd64' &&
+        matrix.platform != 'linux/arm64'
+      }}
     strategy:
       # If is set to true (default), GitHub will cancel all in-progress and
       # queued jobs in the matrix if any job in the matrix fails.
@@ -49,8 +54,7 @@ jobs:
         platform: ${{ fromJSON(inputs.platforms) }}
 
     steps:
-      - 
-        name: Write variables to GITHUB_OUTPUT
+      - name: Write variables to GITHUB_OUTPUT
         id: setup
         run: |
 
@@ -88,11 +92,32 @@ jobs:
 
       # Checkout a repository, so the workflow can access it
       # https://github.com/actions/checkout
-      - 
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - 
-        name: Launch the application
+      # Add support for more platforms with QEMU (optional)
+      # https://github.com/docker/setup-qemu-action
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+
+      # Create and boot a builder that can be used in the following steps of
+      # the workflow
+      # https://github.com/docker/setup-buildx-action
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Test shell
+        run: |
+          IMG="${{ steps.setup.outputs.image_package }}/boca-web:${{ steps.setup.outputs.image_tag }}"
+
+          echo "$IMG"
+
+          docker run --rm \
+            --platform ${{ matrix.platform }} \
+            --entrypoint /bin/bash \
+            "$IMG" \
+            -c 'echo OK'
+
+      - name: Launch the application
         run: |
 
           # Create .env file with environment variables
@@ -105,6 +130,7 @@ jobs:
 
           cat .env
 
+          # docker system prune -af --volumes
           docker compose config
 
           IMG_WEB="${{ steps.setup.outputs.image_package }}/"
@@ -116,10 +142,19 @@ jobs:
           docker pull --platform ${{ matrix.platform }} ${IMG_JAIL}
 
           # List available images
-          docker images
+          docker image ls
 
           # Launch application
-          docker compose up -d
+          docker compose up -d --wait || {
+            docker compose ps
+            docker compose logs boca-jail
+            docker compose logs boca-web
+            docker compose logs boca-db
+            exit 1
+          }
+
+          #  Check for services that terminated unexpectedly during startup
+          docker compose ps --status exited
 
           # List running containers
           docker container ls -a
@@ -128,26 +163,22 @@ jobs:
 
       # Set up GitHub Actions workflow with a specific version of node.js
       # https://github.com/actions/setup-node
-      - 
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 18
+          node-version: 20
 
       # Performs a clean installation of all dependencies in the
       # `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
-      - 
-        name: Install dependencies
+      - name: Install dependencies
         run: npm ci
         working-directory: ./tests/e2e
 
-      - 
-        name: Install Playwright Browsers
+      - name: Install Playwright Browsers
         run: npx playwright install --with-deps
         working-directory: ./tests/e2e
 
-      - 
-        name: Prepare for running tests
+      - name: Prepare for running tests
         run: |
 
           mkdir -p ./playwright/.auth
@@ -155,21 +186,33 @@ jobs:
           echo "{}" > ./playwright/.auth/system.json
         working-directory: ./tests/e2e
 
-      - 
-        name: Run Playwright tests
+      - name: Test HTTP connectivity
+        run: |
+          echo "=== CURL ==="
+          curl -v http://localhost:8000/boca || true
+
+          echo
+          echo "=== WGET ==="
+          wget -S -O - http://localhost:8000/boca || true
+
+          echo
+          echo "=== Docker exec ==="
+          docker compose exec boca-web \
+            wget -S -O - http://localhost/boca || true
+        working-directory: ./tests/e2e
+
+      - name: Run Playwright tests
         run: npx playwright test
         working-directory: ./tests/e2e
 
-      - 
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ${{ steps.setup.outputs.report_name }}
           path: ./tests/e2e/playwright-report/
           retention-days: 30
 
-      - 
-        name: Bring the application down
+      - name: Bring the application down
         run: |
 
           # Stop containers

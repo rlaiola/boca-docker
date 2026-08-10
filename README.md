@@ -12,21 +12,21 @@
 [![Google_Groups][groups_badge]][groups_link]
 
 [build_publish_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/ci.yml?label=build%20images&logo=github
-[build_publish_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=CI "build and publish multi-platform images"
+[build_publish_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=CI 'build and publish multi-platform images'
 [cache_cleanup_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/clean-cache.yml?label=clean%20cache&logo=github
-[cache_cleanup_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=delete%20GitHub "delete github actions cache"
+[cache_cleanup_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=delete%20GitHub 'delete github actions cache'
 [packages_cleanup_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/clean-packages.yml?label=clean%20packages&logo=github
-[packages_cleanup_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=delete%20untagged "delete untagged/unsupported images"
+[packages_cleanup_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=delete%20untagged 'delete untagged/unsupported images'
 [close_stale_workflow_badge]: https://img.shields.io/github/actions/workflow/status/joaofazolo/boca-docker/close-stale.yml?label=close%20stale&logo=github
-[close_stale_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=close%20stale "close stale issues and prs"
+[close_stale_workflow_link]: https://github.com/joaofazolo/boca-docker/actions?workflow=close%20stale 'close stale issues and prs'
 [ubuntu_jammy_badge]: https://img.shields.io/badge/ubuntu-jammy-E95420.svg?logo=Ubuntu
 [ubuntu_focal_badge]: https://img.shields.io/badge/ubuntu-focal-E95420.svg?logo=Ubuntu
-[ubuntu_jammy_link]: https://hub.docker.com/_/ubuntu/tags?page=1&name=jammy "ubuntu:jammy image"
-[ubuntu_focal_link]: https://hub.docker.com/_/ubuntu/tags?page=1&name=focal "ubuntu:focal image"
+[ubuntu_jammy_link]: https://hub.docker.com/_/ubuntu/tags?page=1&name=jammy 'ubuntu:jammy image'
+[ubuntu_focal_link]: https://hub.docker.com/_/ubuntu/tags?page=1&name=focal 'ubuntu:focal image'
 [arch_badge]: https://img.shields.io/badge/multi--arch-%20amd64%20|%20arm/v7%20|%20arm64/v8%20|%20ppc64le%20|%20s390x%20-lightgray.svg?logo=Docker&logoColor=white
-[arch_link]: #how-to-run-on-different-ubuntu-release-images "multi-arch images"
+[arch_link]: #how-to-run-on-different-ubuntu-release-images 'multi-arch images'
 [groups_badge]: https://img.shields.io/badge/join-boca--users%20group-blue.svg?logo=data:image/png;base64,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
-[groups_link]: https://groups.google.com/g/boca-users "boca-users@Google Groups"
+[groups_link]: https://groups.google.com/g/boca-users 'boca-users@Google Groups'
 
 ## Table of Contents
 
@@ -58,9 +58,9 @@ The problem is compound due to the low readability and complex code structuring,
 The _boca-docker_ project is a use case of how we can take advantage of microservices architecture and containerization technology (i.e., Docker) to deploy applications in a more convenient and faster way (see illustration below).
 After quite some reverse engineering, we provide a multi-platform/arch Docker version of BOCA's main components (web app, online automated judge and database) aiming at easing the customization, extensibility and automation of the operational effort required to deploy, run and scale BOCA.
 
-Original architecture | _boca-docker_ architecture
-:-------------------------:|:-------------------------:
-![Alt text](/imgs/arquitetura-boca.png?raw=true "BOCA architecture")  |  ![Alt text](/imgs/arquitetura-boca-docker.png?raw=true "boca-docker architecture")
+|                        Original architecture                         |                             _boca-docker_ architecture                             |
+| :------------------------------------------------------------------: | :--------------------------------------------------------------------------------: |
+| ![Alt text](/imgs/arquitetura-boca.png?raw=true 'BOCA architecture') | ![Alt text](/imgs/arquitetura-boca-docker.png?raw=true 'boca-docker architecture') |
 
 This work started as part of the undergraduate final year project carried out by João Vitor Alves Fazolo under supervision of Prof. Dr. Rodrigo Laiola Guimaraes at Universidade Federal do Espirito Santo ([UFES](https://www.ufes.br/)).
 
@@ -140,31 +140,31 @@ There are many ways to customize the _boca-docker_ application. Without trying t
 
 To run the _boca-docker_ application built on top of different versions of Ubuntu images, please edit the `docker-compose.prod.yml` file with an alternative tag from the table below.
 
-Tag name | BOCA version | Ubuntu version | Code name | Architecture
--------- | ------------ | -------------- | --------- | ------------
-`latest`, `1.2`, `1.2-jammy`, `1.2.2`, `1.2.2-jammy` | 1.5 | 22.04 LTS | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x`
-`1.2-focal`, `1.2.2-focal` | 1.5 | 20.04 LTS | Focal Fossa | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x`
-`nightly`, `nightly-jammy` | 1.5 | 22.04 LTS | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x`
-`nightly-focal` | 1.5 | 20.04 LTS | Focal Fossa | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x`
+| Tag name                                             | BOCA version | Ubuntu version | Code name       | Architecture                                      |
+| ---------------------------------------------------- | ------------ | -------------- | --------------- | ------------------------------------------------- |
+| `latest`, `1.2`, `1.2-jammy`, `1.2.2`, `1.2.2-jammy` | 1.5          | 22.04 LTS      | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
+| `1.2-focal`, `1.2.2-focal`                           | 1.5          | 20.04 LTS      | Focal Fossa     | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
+| `nightly`, `nightly-jammy`                           | 1.5          | 22.04 LTS      | Jammy Jellyfish | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
+| `nightly-focal`                                      | 1.5          | 20.04 LTS      | Focal Fossa     | `amd64`, `arm/v7`, `arm64/v8`, `ppc64le`, `s390x` |
 
 For example, to use BOCA version 1.5 running on Ubuntu 20.04 LTS (Focal Fossa) on any supported architecture:
 
-  ```sh
+```sh
+...
+services:
   ...
-  services:
-    ...
 
-    # web app
-    boca-web:
-        image: ghcr.io/joaofazolo/boca-docker/boca-web:1.2-focal
-    ...
+  # web app
+  boca-web:
+      image: ghcr.io/joaofazolo/boca-docker/boca-web:1.2-focal
+  ...
 
-    ...
-    # online judge
-    boca-jail:
-        image: ghcr.io/joaofazolo/boca-docker/boca-jail:1.2-focal
-    ...
-  ```
+  ...
+  # online judge
+  boca-jail:
+      image: ghcr.io/joaofazolo/boca-docker/boca-jail:1.2-focal
+  ...
+```
 
 ### Deprecated Image Tags
 
@@ -243,21 +243,21 @@ If you would like to help contribute to this project, please see [CONTRIBUTING](
 
 Before submitting a PR consider building and testing a Docker image locally and checking your code with Super-Linter:
 
-  ```sh
-  docker run --rm \
-             -e ACTIONS_RUNNER_DEBUG=true \
-             -e RUN_LOCAL=true \
-             --env-file ".github/super-linter.env" \
-             -v "$PWD":/tmp/lint \
-             ghcr.io/super-linter/super-linter:latest
-  ```
+```sh
+docker run --rm \
+           -e ACTIONS_RUNNER_DEBUG=true \
+           -e RUN_LOCAL=true \
+           --env-file ".github/super-linter.env" \
+           -v "$PWD":/tmp/lint \
+           ghcr.io/super-linter/super-linter:latest
+```
 
 ## Known Issues
 
 - Rosetta for x86_64/amd64 emulation must be disabled on Apple Silicon
-(ARM-based chips) for the online automated judge (boca-jail) to work (tested
-on Apple M1, Docker Desktop 4.28.0, Engine: 25.0.3, Compose: v2.24.6-desktop.1,
-Mar 2024);
+  (ARM-based chips) for the online automated judge (boca-jail) to work (tested
+  on Apple M1, Docker Desktop 4.28.0, Engine: 25.0.3, Compose: v2.24.6-desktop.1,
+  Mar 2024);
 
 ## Who Is Using It?
 
@@ -281,11 +281,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 This program is released under license GNU GPL v3+ license.
 
