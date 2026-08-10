@@ -39,8 +39,7 @@ on:
       ref:
         # The branch, tag or SHA to checkout in builds. If empty, check out
         # the repository that triggered the workflow.
-        description:
-          The branch, tag or SHA to checkout (empty for current branch)
+        description: The branch, tag or SHA to checkout (empty for current branch)
         required: false
         type: string
       boca_repository:
@@ -82,7 +81,7 @@ jobs:
   # Calling a reusable workflow
   # https://docs.github.com/en/actions/using-workflows/reusing-workflows
   setup-matrix:
-    uses: ./.github/workflows/read-matrix.yml
+    uses: rlaiola/ci-templates/.github/workflows/read-matrix.yml@main
     with:
       matrix-path: docker/build/matrix.json
 
@@ -93,6 +92,7 @@ jobs:
       tags: ${{ steps.set-inputs.outputs.tags }}
       latest: ${{ steps.set-inputs.outputs.latest }}
       ref: ${{ steps.set-inputs.outputs.ref }}
+      image_tag: ${{ steps.set-inputs.outputs.image_tag }}
       boca_repository: ${{ steps.set-inputs.outputs.boca_repository }}
       boca_ref: ${{ steps.set-inputs.outputs.boca_ref }}
       retry_countdown: ${{ steps.set-inputs.outputs.retry_countdown }}
@@ -103,16 +103,14 @@ jobs:
     steps:
       # Checkout a repository, so the workflow can access it
       # https://github.com/actions/checkout
-      - 
-        name: Checkout repository
-        uses: actions/checkout@v6
+      - name: Checkout repository
+        uses: actions/checkout@v7
         with:
           ref: '${{ inputs.ref }}'
 
       # Setting output parameters between steps, jobs and/or workflows
       # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-      - 
-        name: Prepare inputs
+      - name: Prepare inputs
         id: set-inputs
         run: |
 
@@ -180,6 +178,13 @@ jobs:
             echo "ref=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
           fi
 
+          # 
+          IMAGE_TAG="${TAGS%% *}"
+          if [[ "${IMAGE_TAG}" == "latest" && "${TAGS}" == *" "* ]]; then
+            IMAGE_TAG="${TAGS#* }"
+          fi
+          echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+
           # Prepare the Git URL of the BOCA repository to clone from and
           # the branch, tag or SHA to point to in the cloned BOCA repository
           BOCA_REPOSITORY="${{ inputs.boca_repository }}"
@@ -221,28 +226,72 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-base:
-    uses: ./.github/workflows/build-images.yml
-    with:
-      images: '[ "boca-base" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
-      default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
-      platforms: ${{ needs.setup-matrix.outputs.platform }}
-      tags: ${{ needs.setup-inputs.outputs.tags }}
-      latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
-      ref: ${{ needs.setup-inputs.outputs.ref }}
-      boca_repository: ${{ needs.setup-inputs.outputs.boca_repository }}
-      boca_ref: ${{ needs.setup-inputs.outputs.boca_ref }}
+  setup-parents:
+    runs-on: ubuntu-latest
+    outputs:
+      base_parent: ${{ steps.parents.outputs.base_parent }}
+      derived_parent: ${{ steps.parents.outputs.derived_parent }}
     needs:
       - setup-matrix
       - setup-inputs
 
-  build-web:
-    uses: ./.github/workflows/build-images.yml
+    steps:
+      - id: parents
+        shell: bash
+        run: |
+
+          BASE_PARENT='${{ needs.setup-matrix.outputs.parent }}'
+
+          DERIVED_PARENT=$(
+            jq -c \
+              --arg repo "ghcr.io/${GITHUB_REPOSITORY}/boca-base" \
+              --arg tag "${{ needs.setup-inputs.outputs.image_tag }}" \
+              '
+                map(
+                  $repo
+                  + ":"
+                  + $tag
+                  + "-"
+                  + (split(":") | last)
+                )
+              ' <<< "$BASE_PARENT"
+          )
+
+          DEFAULT_PARENT=$(
+            jq -r '.[0]' <<< "$DERIVED_PARENT"
+          )
+
+          echo "$DEFAULT_PARENT"
+          echo "base_parent=$DEFAULT_PARENT" >> "$GITHUB_OUTPUT"
+
+          echo "$DERIVED_PARENT"
+          echo "derived_parent=$DERIVED_PARENT" >> "$GITHUB_OUTPUT"
+
+  build-base:
+    uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "boca-web" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
+      dockerfile: docker/dev/base/Dockerfile
       parents: ${{ needs.setup-matrix.outputs.parent }}
       default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
+      platforms: ${{ needs.setup-matrix.outputs.platform }}
+      tags: ${{ needs.setup-inputs.outputs.tags }}
+      latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
+      ref: ${{ needs.setup-inputs.outputs.ref }}
+      code_repository: ${{ needs.setup-inputs.outputs.boca_repository }}
+      code_ref: ${{ needs.setup-inputs.outputs.boca_ref }}
+    needs:
+      - setup-matrix
+      - setup-inputs
+      - setup-parents
+
+  build-web:
+    uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
+    with:
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
+      dockerfile: docker/dev/web/Dockerfile
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
+      default_parent: ${{ needs.setup-parents.outputs.base_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
       latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
@@ -250,14 +299,16 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-base
 
   build-jail:
-    uses: ./.github/workflows/build-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/build-images.yml@main
     with:
-      images: '[ "boca-jail" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
-      default_parent: ${{ needs.setup-matrix.outputs.default_parent }}
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
+      dockerfile: docker/dev/jail/Dockerfile
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
+      default_parent: ${{ needs.setup-parents.outputs.base_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tags: ${{ needs.setup-inputs.outputs.tags }}
       latest: ${{ needs.setup-inputs.outputs.latest == 'true' }}
@@ -265,12 +316,13 @@ jobs:
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-base
 
   lint-base:
-    uses: ./.github/workflows/lint-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -280,9 +332,9 @@ jobs:
       - build-base
 
   scan-base:
-    uses: ./.github/workflows/scan-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "boca-base" ]'
+      images: '[ "${{ github.event.repository.name }}/boca-base" ]'
       parents: ${{ needs.setup-matrix.outputs.parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
@@ -292,51 +344,57 @@ jobs:
       - build-base
 
   lint-web:
-    uses: ./.github/workflows/lint-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "boca-web" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-web
-    
+
   scan-web:
-    uses: ./.github/workflows/scan-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "boca-web" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      images: '[ "${{ github.event.repository.name }}/boca-web" ]'
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-web
 
   lint-jail:
-    uses: ./.github/workflows/lint-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/lint-images.yml@main
     with:
-      images: '[ "boca-jail" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
+      accept-filenames: |
+        settings.py
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-jail
-    
+
   scan-jail:
-    uses: ./.github/workflows/scan-images.yml
+    uses: rlaiola/ci-templates/.github/workflows/scan-images.yml@main
     with:
-      images: '[ "boca-jail" ]'
-      parents: ${{ needs.setup-matrix.outputs.parent }}
+      images: '[ "${{ github.event.repository.name }}/boca-jail" ]'
+      parents: ${{ needs.setup-parents.outputs.derived_parent }}
       platforms: ${{ needs.setup-matrix.outputs.platform }}
       tag: ${{ needs.setup-inputs.outputs.tags }}
     needs:
       - setup-matrix
       - setup-inputs
+      - setup-parents
       - build-jail
 
   e2e-test:
@@ -364,9 +422,7 @@ jobs:
       - build-jail
 
     steps:
-
-      - 
-        name: Retry the workflow
+      - name: Retry the workflow
         run: |
 
           ATTEMPT=$((${{ needs.setup-inputs.outputs.retry_countdown }}))
